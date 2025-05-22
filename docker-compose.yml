@@ -1,0 +1,62 @@
+
+services:
+  mdm-postgres:
+    image: postgres:16
+    container_name: mdm-postgres
+    environment:
+      POSTGRES_DB: mdmdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    networks:
+      - app-network
+
+  dem-postgres:
+    image: postgres:16
+    container_name: dem-postgres
+    environment:
+      POSTGRES_DB: demdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5434:5432"
+    networks:
+      - app-network
+
+  mdm-service:
+    build:
+      context: ./mdm-service
+    container_name: mdm-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://mdm-postgres:5432/mdmdb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mdm-postgres
+    networks:
+      - app-network
+
+  dem-service:
+    build:
+      context: ./dem-service
+    container_name: dem-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://dem-postgres:5432/demdb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      # Se necessário, adicionar variável para o MDM endpoint
+      MDM_SERVICE_URL: http://mdm-service:8080
+    ports:
+      - "8081:8081"
+    depends_on:
+      - dem-postgres
+      - mdm-service
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
