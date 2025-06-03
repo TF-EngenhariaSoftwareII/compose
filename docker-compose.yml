@@ -26,7 +26,7 @@ services:
 
   mdm-service:
     build:
-      context: ./mdm-service
+      context: ../mdm-dadosmestres-2/mdm-service/mdm-service
     container_name: mdm-service
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://mdm-postgres:5432/mdmdb
@@ -41,7 +41,7 @@ services:
 
   dem-service:
     build:
-      context: ./dem-service
+      context: ../dem-extracaodados-2/dem-service/dem-service
     container_name: dem-service
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://dem-postgres:5432/demdb
